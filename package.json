@@ -1,0 +1,42 @@
+{
+  "name": "claude-nist-elliptic-curves-poc",
+  "version": "1.0.0",
+  "description": "NIST elliptic curves POC",
+  "homepage": "https://github.com/matthewoestreich/claude-nist-elliptic-curves-poc#readme",
+  "bugs": {
+    "url": "https://github.com/matthewoestreich/claude-nist-elliptic-curves-poc/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/matthewoestreich/claude-nist-elliptic-curves-poc.git"
+  },
+  "license": "MIT",
+  "author": "Matt Oestreich",
+  "type": "module",
+  "files": [
+    "dist"
+  ],
+  "main": "./dist/index.js",
+  "types": "./dist/types/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/types/index.d.ts",
+      "import": "./dist/index.js"
+    }
+  },
+  "engines": {
+    "node": ">=26.0.0"
+  },
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build && npm run emit:types",
+    "emit:types": "tsc -p tsconfig.build.json",
+    "format": "prettier --write \"src/**/*.*\" \"tests/**/*.ts\""
+  },
+  "devDependencies": {
+    "@types/node": "^26.6.5",
+    "prettier": "^3.9.10",
+    "typescript": "^7.0.2",
+    "vite": "^8.3.4"
+  }
+}
