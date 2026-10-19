@@ -1,7 +1,7 @@
 export default class Rand48 {
-  // LCG multiplier used by the drand48 algorithm.
+  // LCG mulltiplier constant.
   private static readonly MULTIPLIER = 0x5deece66dn;
-  // LCG increment used by the drand48 algorithm.
+  // LCG increment constant.
   private static readonly INCREMENT = 0xbn;
   // Mask to retain the lower 48 bits of the state.
   private static readonly STATE_MASK = (1n << 48n) - 1n;
