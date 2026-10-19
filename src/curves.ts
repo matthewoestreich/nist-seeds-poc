@@ -1,10 +1,9 @@
-import { CurveKind } from "./types.ts";
 import type { Curve } from "./types.ts";
 
 const curves: Curve[] = [
   {
     name: "prime239v1",
-    kind: CurveKind.Prime,
+    kind: "PRIME",
     date: new Date("1997-05-15T15:49:03.000Z"),
     prngIterations: 20,
     overallIterations: 2185,
@@ -14,7 +13,7 @@ const curves: Curve[] = [
   },
   {
     name: "prime239v2",
-    kind: CurveKind.Prime,
+    kind: "PRIME",
     date: new Date("1997-05-15T15:49:03.000Z"),
     prngIterations: 20,
     overallIterations: 2320,
@@ -24,7 +23,7 @@ const curves: Curve[] = [
   },
   {
     name: "prime239v3",
-    kind: CurveKind.Prime,
+    kind: "PRIME",
     date: new Date("1997-05-15T15:49:03.000Z"),
     prngIterations: 20,
     overallIterations: 3048,
@@ -34,7 +33,7 @@ const curves: Curve[] = [
   },
   {
     name: "P-192",
-    kind: CurveKind.Prime,
+    kind: "PRIME",
     date: new Date("1997-05-18T14:45:34.000Z"),
     prngIterations: 20,
     overallIterations: 139,
@@ -44,7 +43,7 @@ const curves: Curve[] = [
   },
   {
     name: "prime192v3",
-    kind: CurveKind.Prime,
+    kind: "PRIME",
     date: new Date("1997-05-18T14:45:34.000Z"),
     prngIterations: 20,
     overallIterations: 5228,
@@ -54,7 +53,7 @@ const curves: Curve[] = [
   },
   {
     name: "prime192v2",
-    kind: CurveKind.Prime,
+    kind: "PRIME",
     date: new Date("1997-05-18T14:45:34.000Z"),
     prngIterations: 20,
     overallIterations: 6013,
@@ -64,7 +63,7 @@ const curves: Curve[] = [
   },
   {
     name: "P-521",
-    kind: CurveKind.Prime,
+    kind: "PRIME",
     date: new Date("1997-08-08T01:12:04.000Z"),
     prngIterations: 20,
     overallIterations: 1136,
@@ -74,7 +73,7 @@ const curves: Curve[] = [
   },
   {
     name: "P-256",
-    kind: CurveKind.Prime,
+    kind: "PRIME",
     date: new Date("1997-08-16T01:52:34.000Z"),
     prngIterations: 20,
     overallIterations: 1842,
@@ -84,7 +83,7 @@ const curves: Curve[] = [
   },
   {
     name: "P-384",
-    kind: CurveKind.Prime,
+    kind: "PRIME",
     date: new Date("1997-08-30T14:50:08.000Z"),
     prngIterations: 20,
     overallIterations: 2688,
@@ -94,7 +93,7 @@ const curves: Curve[] = [
   },
   {
     name: "P-224",
-    kind: CurveKind.Prime,
+    kind: "PRIME",
     date: new Date("1998-04-03T12:52:07.000Z"),
     prngIterations: 20,
     overallIterations: 7026,
@@ -104,7 +103,7 @@ const curves: Curve[] = [
   },
   {
     name: "B-233",
-    kind: CurveKind.Binary,
+    kind: "BINARY",
     date: new Date("1998-04-17T15:24:18.000Z"),
     prngIterations: 5,
     overallIterations: 155,
@@ -114,7 +113,7 @@ const curves: Curve[] = [
   },
   {
     name: "B-283",
-    kind: CurveKind.Binary,
+    kind: "BINARY",
     date: new Date("1998-04-17T15:27:44.000Z"),
     prngIterations: 5,
     overallIterations: 32,
@@ -124,7 +123,7 @@ const curves: Curve[] = [
   },
   {
     name: "B-409",
-    kind: CurveKind.Binary,
+    kind: "BINARY",
     date: new Date("1998-04-17T15:30:18.000Z"),
     prngIterations: 5,
     overallIterations: 60,
@@ -134,7 +133,7 @@ const curves: Curve[] = [
   },
   {
     name: "B-571",
-    kind: CurveKind.Binary,
+    kind: "BINARY",
     date: new Date("1998-04-17T15:32:08.000Z"),
     prngIterations: 5,
     overallIterations: 73,

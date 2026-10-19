@@ -1,9 +1,4 @@
-export const CurveKind = {
-  Prime: "PRIME",
-  Binary: "BINARY",
-} as const;
-
-export type CurveKind = (typeof CurveKind)[keyof typeof CurveKind];
+export type CurveKind = "PRIME" | "BINARY";
 
 export type CurveResult = {
   name: string;
