@@ -1,23 +1,29 @@
-export type CurveKind = "PRIME" | "BINARY";
+export type StreamKind = "PRIME" | "BINARY";
 
-export type CurveResult = {
+export type ReconstructedSeed = {
+  value: string;
+  bytes: number[];
+};
+
+export type StreamResult = {
   name: string;
-  kind: CurveKind;
+  kind: StreamKind;
   date: Date;
   unixTimestamp: number;
-  expected: string;
+  published: string;
   value: string;
   isAccurate: boolean;
 };
 
-export type Curve = {
+export type Stream = {
   name: string;
-  kind: CurveKind;
+  kind: StreamKind;
   date: Date;
   unixTimestamp?: number;
   prngIterations: number;
   overallIterations: number;
   shiftOutputBy: number;
   width: number;
-  expected: string;
+  prime?: bigint;
+  published: string;
 };
