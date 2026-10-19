@@ -35,7 +35,6 @@ function reconstructSeed(curve: Curve): string {
   for (let i = 1; i <= curve.overallIterations; i++) {
     for (let j = 0; j < curve.prngIterations; j++) {
       const random = prng.lrand48();
-
       if (i === curve.overallIterations) {
         const keep = random >>> curve.shiftOutputBy;
         const hex = keep.toString(16).padStart(curve.width, "0").toUpperCase();
