@@ -1,4 +1,4 @@
-export default class drand48 {
+export default class Rand48 {
   // LCG multiplier used by the drand48 algorithm.
   private static readonly MULTIPLIER = 0x5deece66dn;
   // LCG increment used by the drand48 algorithm.
@@ -16,32 +16,36 @@ export default class drand48 {
   // Mask to retain the lower 32 bits of the seed.
   private static readonly SEED_MASK = 0xffffffffn;
 
-  private state = 0x1234abcd330en;
+  private state = 0n;
+  private seed = 0n;
 
-  // Initializes PRNG using `srand48`
-  constructor(seed: bigint) {
-    this.srand48(seed);
+  // If a seed is provided, we use it to initialize the PRNG via `srand48`
+  constructor(seed?: bigint) {
+    if (seed !== undefined) {
+      this.srand48(seed);
+    }
   }
 
-  random(): number {
-    this.advanceState();
-    return Number(this.state) / drand48.SCALE;
-  }
-
+  // Initialization function
   srand48(seed: bigint): void {
+    this.seed = seed;
     this.state =
-      ((seed & drand48.SEED_MASK) << drand48.SEED_SHIFT) |
-      drand48.INITIAL_STATE_SUFFIX;
+      ((this.seed & Rand48.SEED_MASK) << Rand48.SEED_SHIFT) |
+      Rand48.INITIAL_STATE_SUFFIX;
+  }
+
+  drand48(): number {
+    this.advanceState();
+    return Number(this.state) / Rand48.SCALE;
   }
 
   lrand48(): number {
     this.advanceState();
-    return Number(this.state >> drand48.OUTPUT_SHIFT);
+    return Number(this.state >> Rand48.OUTPUT_SHIFT);
   }
 
   private advanceState(): void {
     this.state =
-      (drand48.MULTIPLIER * this.state + drand48.INCREMENT) &
-      drand48.STATE_MASK;
+      (Rand48.MULTIPLIER * this.state + Rand48.INCREMENT) & Rand48.STATE_MASK;
   }
 }

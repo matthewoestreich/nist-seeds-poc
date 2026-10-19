@@ -1,7 +1,7 @@
 import curves from "./curves.ts";
-import drand48 from "./drand48.ts";
+import Rand48 from "./rand48.ts";
 
-import { CurveKind, type Curve, type CurveResult } from "./types.ts";
+import type { Curve, CurveResult } from "./types.ts";
 
 const results: CurveResult[] = curves.map((curve) => {
   curve.unixTimestamp = unixTimestamp(curve.date);
@@ -23,10 +23,12 @@ console.table(results);
 console.log();
 
 function reconstructSeed(curve: Curve): string {
+  const isPrime = curve.kind === "PRIME";
   const unixTime = curve.unixTimestamp ?? unixTimestamp(curve.date);
-  const isPrime = curve.kind === CurveKind.Prime;
   const seed = isPrime ? unixTime : Math.floor(unixTime / 2);
-  const prng = new drand48(BigInt(seed));
+
+  const prng = new Rand48();
+  prng.srand48(BigInt(seed));
 
   const hexs: string[] = [];
 
