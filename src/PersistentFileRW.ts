@@ -48,5 +48,6 @@ export default class PersistentFileRW {
       await this.fileHandle.close();
       this.fileHandle = null;
     }
+    return Promise.resolve();
   }
 }

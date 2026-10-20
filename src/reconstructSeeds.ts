@@ -1,44 +1,60 @@
+import type { PublishedSeed, StreamResult } from "./types.ts";
+import { SEED_EXTRACTION_PARAMS } from "./constants.ts";
+
 import streams from "./streams.ts";
-import Rand48 from "./rand48.ts";
+import Rand48 from "./Rand48.ts";
 
-import type { Stream, StreamResult } from "./types.ts";
-import { dateToUnixTimestamp } from "./date.ts";
+const results: StreamResult[] = [];
 
-const results: StreamResult[] = streams.map((stream) => {
-  stream.unixTimestamp = dateToUnixTimestamp(stream.date);
-  const value = reconstructSeed(stream);
+for (const stream of streams) {
+  for (const published of stream.published) {
+    const calculatedSeed = reconstructSeed(
+      stream.timestamp,
+      stream.primeField,
+      published,
+    ).toUpperCase();
 
-  return {
-    name: stream.name,
-    kind: stream.kind,
-    date: stream.date,
-    unixTimestamp: stream.unixTimestamp,
-    published: stream.published,
-    value,
-    isAccurate: value === stream.published,
-  };
-});
+    const publishedSeed = published.seed.toString(16).toUpperCase();
+
+    results.push({
+      name: published.name,
+      date: stream.date,
+      timestamp: stream.timestamp,
+      publishedSeed,
+      calculatedSeed,
+      isAccurate: publishedSeed === calculatedSeed,
+    });
+  }
+}
 
 console.log();
 console.table(results);
 console.log();
 
-function reconstructSeed(stream: Stream): string {
-  const isPrime = stream.kind === "PRIME";
-  const unixTime = stream.unixTimestamp ?? dateToUnixTimestamp(stream.date);
-  const seed = isPrime ? unixTime : Math.floor(unixTime / 2);
+function reconstructSeed(
+  timestamp: number,
+  primeField: bigint | undefined,
+  publishedSeed: PublishedSeed,
+): string {
+  const isPrime = primeField !== undefined;
+  const { params, seed } = isPrime
+    ? { seed: timestamp, params: SEED_EXTRACTION_PARAMS.prime }
+    : {
+        seed: Math.floor(timestamp / 2),
+        params: SEED_EXTRACTION_PARAMS.binary,
+      };
 
   const prng = new Rand48();
   prng.srand48(BigInt(seed));
 
   const hexs: string[] = [];
 
-  for (let i = 1; i <= stream.overallIterations; i++) {
-    for (let j = 0; j < stream.prngIterations; j++) {
+  for (let i = 1; i <= publishedSeed.candidateNumber; i++) {
+    for (let j = 0; j < params.lrand48Iterations; j++) {
       const random = prng.lrand48();
-      if (i === stream.overallIterations) {
-        const keep = random >>> stream.shiftOutputBy;
-        const hex = keep.toString(16).padStart(stream.width, "0").toUpperCase();
+      if (i === publishedSeed.candidateNumber) {
+        const keep = random >>> params.shiftOutputBy;
+        const hex = keep.toString(16).padStart(params.width, "0").toUpperCase();
         hexs.push(hex);
       }
     }

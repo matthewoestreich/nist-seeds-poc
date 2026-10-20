@@ -1,40 +1,29 @@
-export type StreamKind = "PRIME" | "BINARY";
-
-export type StreamResult = {
-  name: string;
-  kind: StreamKind;
-  date: Date;
-  unixTimestamp: number;
-  published: string;
-  value: string;
-  isAccurate: boolean;
-};
-
-export type Stream = {
-  name: string;
-  kind: StreamKind;
-  date: Date;
-  unixTimestamp?: number;
-  prngIterations: number;
-  overallIterations: number;
-  shiftOutputBy: number;
-  width: number;
-  prime?: bigint;
-  published: string;
-};
-
 export type OrderCache = Record<string, string>;
 
 export type PublishedSeed = {
   name: string;
-  seed: string;
+  candidateNumber: number;
+  seed: bigint;
 };
 
-export type Stream2 = {
+export type Stream = {
   date: Date;
   timestamp: number;
   primeField?: bigint;
-  lrand48Iterations: number;
-  candidateNumber: number;
   published: PublishedSeed[];
+};
+
+export type StreamResult = {
+  name: string;
+  date: Date;
+  timestamp: number;
+  publishedSeed: string;
+  calculatedSeed: string;
+  isAccurate: boolean;
+};
+
+export type SeedExtractionParameters = {
+  shiftOutputBy: number;
+  width: number;
+  lrand48Iterations: number;
 };

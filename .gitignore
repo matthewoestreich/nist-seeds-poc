@@ -1,6 +1,7 @@
 .DS_Store
 jsconfig.json
 node_modules/
+orders_cache_og.txt
 
 # ==============================================================================
 # TypeScript Output & Build Artifacts
