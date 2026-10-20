@@ -1,22 +1,24 @@
 import type { OrderCache, Stream } from "./types.ts";
 import { SEED_BITS, SEED_BYTES, SEED_MODULUS } from "./constants.ts";
-
 import { createHash } from "node:crypto";
+import { formatDate } from "./date.ts";
 import streams from "./streams.ts";
 import Rand48 from "./Rand48.ts";
-import { formatDate } from "./date.ts";
-import { PariGP } from "./PariGP.ts";
+import PariGP from "./PariGP.ts";
 import PersistentFileRW from "./PersistentFileRW.ts";
 
 const ACCEPTED_STREAM_DEFAULT_NAME = "-";
 const CACHE_FILE_PATH = "./orders_cache.txt";
-
 const CACHER = new PersistentFileRW(CACHE_FILE_PATH);
-const PARI = new PariGP();
-
+const PARIGP = new PariGP();
 const ORDER_CACHE = await initializeCache(CACHER);
 
-await searchPrimeStreams(streams, CACHER);
+await Main();
+
+async function Main() {
+  await searchPrimeStreams(streams, CACHER);
+  PARIGP.close();
+}
 
 async function searchPrimeStreams(
   streams: Stream[],
@@ -50,7 +52,6 @@ async function searchPrimeStreams(
     }
   }
 
-  PARI.close();
   await cacher.close();
 }
 
@@ -309,7 +310,7 @@ async function curveOrder(p: bigint, b: bigint): Promise<bigint> {
 
   // Cache miss : Generate curve order via pari/gp
   try {
-    const order = await PARI.curveOrder(p, b);
+    const order = await PARIGP.curveOrder(p, b);
     cacheOrder(CACHER, p, b, order);
     return Promise.resolve(order);
   } catch (err: unknown) {

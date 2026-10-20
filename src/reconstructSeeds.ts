@@ -1,6 +1,5 @@
 import type { PublishedSeed, StreamResult } from "./types.ts";
 import { SEED_EXTRACTION_PARAMS } from "./constants.ts";
-
 import streams from "./streams.ts";
 import Rand48 from "./Rand48.ts";
 

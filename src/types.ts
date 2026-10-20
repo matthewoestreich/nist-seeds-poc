@@ -27,3 +27,8 @@ export type SeedExtractionParameters = {
   width: number;
   lrand48Iterations: number;
 };
+
+export interface PendingRequest {
+  resolve: (value: bigint) => void;
+  reject: (reason: Error) => void;
+}

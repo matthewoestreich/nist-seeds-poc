@@ -1,5 +1,4 @@
 import type { SeedExtractionParameters } from "./types.ts";
-
 import Rand48 from "./Rand48.ts";
 
 export default function generateNSeeds(

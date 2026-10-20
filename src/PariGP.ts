@@ -1,12 +1,8 @@
 import { spawn, type ChildProcessWithoutNullStreams } from "node:child_process";
 import { createInterface } from "node:readline";
+import { PendingRequest } from "./types.ts";
 
-interface PendingRequest {
-  resolve: (value: bigint) => void;
-  reject: (reason: Error) => void;
-}
-
-export class PariGP {
+export default class PariGP {
   private readonly child: ChildProcessWithoutNullStreams;
   private readonly pending: PendingRequest[] = [];
   private output: string[] = [];
@@ -28,7 +24,9 @@ export class PariGP {
         const result = this.output.join("\n").trim();
         this.output = [];
 
-        if (!request) return;
+        if (!request) {
+          return;
+        }
 
         if (!/^\d+$/.test(result)) {
           request.reject(
