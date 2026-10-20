@@ -1,16 +1,15 @@
 import { createHash } from "node:crypto";
-// import { spawnSync } from "node:child_process";
 import { PariGP } from "./pari-gp.ts";
 
 import type { OrderCache } from "./types.ts";
-import Cacher from "./Cacher.ts";
+import PersistantFileRW from "./PersistantFileRW.ts";
 
 const SEED_BITS = 160n;
 const SEED_BYTES = 20;
 const SEED_MODULUS = 1n << SEED_BITS;
 
 const CACHE_FILE_PATH = "./orders.txt";
-const CACHER = new Cacher(CACHE_FILE_PATH);
+const CACHER = new PersistantFileRW(CACHE_FILE_PATH);
 const ORDER_CACHE = await initializeCache(CACHER);
 
 const PARI = new PariGP();
@@ -23,14 +22,6 @@ export async function qualifiesSeed(
   pHex: string,
   seedHex: string,
 ): Promise<boolean> {
-  if (!/^[0-9a-fA-F]{40}$/.test(seedHex)) {
-    throw new Error("Seed must be exactly 40 hexadecimal characters");
-  }
-
-  if (!/^[0-9a-fA-F]+$/.test(pHex)) {
-    throw new Error("p must be a hexadecimal integer");
-  }
-
   const p = BigInt(`0x${pHex}`);
   const seed = Buffer.from(seedHex, "hex");
 
@@ -262,7 +253,7 @@ async function curveOrder(p: bigint, b: bigint): Promise<bigint> {
   }
 }
 
-async function initializeCache(cacher: Cacher): Promise<OrderCache> {
+async function initializeCache(cacher: PersistantFileRW): Promise<OrderCache> {
   await cacher.initialize();
   const cache: OrderCache = {};
 
@@ -281,7 +272,7 @@ async function initializeCache(cacher: Cacher): Promise<OrderCache> {
 }
 
 async function cacheOrder(
-  cacher: Cacher,
+  cacher: PersistantFileRW,
   p: bigint,
   b: bigint,
   n: bigint,

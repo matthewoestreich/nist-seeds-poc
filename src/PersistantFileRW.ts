@@ -2,7 +2,7 @@ import { open, type FileHandle } from "node:fs/promises";
 import { createReadStream } from "node:fs";
 import readline from "node:readline";
 
-export default class Cacher {
+export default class PersistantFileRW {
   private fileHandle: FileHandle | null = null;
   private filePath: string;
   private writeQueue: Promise<void> = Promise.resolve();
@@ -47,7 +47,6 @@ export default class Cacher {
       await this.writeQueue;
       await this.fileHandle.close();
       this.fileHandle = null;
-      console.log("File handle safely closed.");
     }
   }
 }
