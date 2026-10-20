@@ -1,6 +1,10 @@
-import type { Curve } from "./types.ts";
+import type { Stream } from "./types.ts";
 
-const curves: Curve[] = [
+/*
+To find the prime fields: https://nvlpubs.nist.gov/nistpubs/SpecialPublications/NIST.SP.800-186.pdf, specifically section 3.2
+*/
+
+const streams: Stream[] = [
   {
     name: "prime239v1",
     kind: "PRIME",
@@ -9,7 +13,9 @@ const curves: Curve[] = [
     overallIterations: 2185,
     shiftOutputBy: 23,
     width: 2,
-    expected: "E43BB460F0B80CC0C0B075798E948060F8321B7D",
+    prime:
+      883423532389192164791648750360308885314476597252960362792450860609699839n,
+    published: "E43BB460F0B80CC0C0B075798E948060F8321B7D",
   },
   {
     name: "prime239v2",
@@ -19,7 +25,9 @@ const curves: Curve[] = [
     overallIterations: 2320,
     shiftOutputBy: 23,
     width: 2,
-    expected: "E8B4011604095303CA3B8099982BE09FCB9AE616",
+    prime:
+      883423532389192164791648750360308885314476597252960362792450860609699839n,
+    published: "E8B4011604095303CA3B8099982BE09FCB9AE616",
   },
   {
     name: "prime239v3",
@@ -29,7 +37,9 @@ const curves: Curve[] = [
     overallIterations: 3048,
     shiftOutputBy: 23,
     width: 2,
-    expected: "7D7374168FFE3471B60A857686A19475D3BFA2FF",
+    prime:
+      883423532389192164791648750360308885314476597252960362792450860609699839n,
+    published: "7D7374168FFE3471B60A857686A19475D3BFA2FF",
   },
   {
     name: "P-192",
@@ -39,7 +49,8 @@ const curves: Curve[] = [
     overallIterations: 139,
     shiftOutputBy: 23,
     width: 2,
-    expected: "3045AE6FC8422F64ED579528D38120EAE12196D5",
+    prime: 6277101735386680763835789423207666416083908700390324961279n,
+    published: "3045AE6FC8422F64ED579528D38120EAE12196D5",
   },
   {
     name: "prime192v3",
@@ -49,7 +60,8 @@ const curves: Curve[] = [
     overallIterations: 5228,
     shiftOutputBy: 23,
     width: 2,
-    expected: "C469684435DEB378C4B65CA9591E2A5763059A2E",
+    prime: 6277101735386680763835789423207666416083908700390324961279n,
+    published: "C469684435DEB378C4B65CA9591E2A5763059A2E",
   },
   {
     name: "prime192v2",
@@ -59,7 +71,8 @@ const curves: Curve[] = [
     overallIterations: 6013,
     shiftOutputBy: 23,
     width: 2,
-    expected: "31A92EE2029FD10D901B113E990710F0D21AC6B6",
+    prime: 6277101735386680763835789423207666416083908700390324961279n,
+    published: "31A92EE2029FD10D901B113E990710F0D21AC6B6",
   },
   {
     name: "P-521",
@@ -69,7 +82,9 @@ const curves: Curve[] = [
     overallIterations: 1136,
     shiftOutputBy: 23,
     width: 2,
-    expected: "D09E8800291CB85396CC6717393284AAA0DA64BA",
+    prime:
+      6864797660130609714981900799081393217269435300143305409394463459185543183397656052122559640661454554977296311391480858037121987999716643812574028291115057151n,
+    published: "D09E8800291CB85396CC6717393284AAA0DA64BA",
   },
   {
     name: "P-256",
@@ -79,7 +94,9 @@ const curves: Curve[] = [
     overallIterations: 1842,
     shiftOutputBy: 23,
     width: 2,
-    expected: "C49D360886E704936A6678E1139D26B7819F7E90",
+    prime:
+      115792089210356248762697446949407573530086143415290314195533631308867097853951n,
+    published: "C49D360886E704936A6678E1139D26B7819F7E90",
   },
   {
     name: "P-384",
@@ -89,7 +106,9 @@ const curves: Curve[] = [
     overallIterations: 2688,
     shiftOutputBy: 23,
     width: 2,
-    expected: "A335926AA319A27A1D00896A6773A4827ACDAC73",
+    prime:
+      39402006196394479212279040100143613805079739270465446667948293404245721771496870329047266088258938001861606973112319n,
+    published: "A335926AA319A27A1D00896A6773A4827ACDAC73",
   },
   {
     name: "P-224",
@@ -99,7 +118,9 @@ const curves: Curve[] = [
     overallIterations: 7026,
     shiftOutputBy: 23,
     width: 2,
-    expected: "BD71344799D5C7FCDC45B59FA3B9AB8F6A948BC5",
+    prime:
+      26959946667150639794667015087019630673557916260026308143510066298881n,
+    published: "BD71344799D5C7FCDC45B59FA3B9AB8F6A948BC5",
   },
   {
     name: "B-233",
@@ -109,7 +130,7 @@ const curves: Curve[] = [
     overallIterations: 155,
     shiftOutputBy: 0,
     width: 8,
-    expected: "74D59FF07F6B413D0EA14B344B20A2DB049B50C3",
+    published: "74D59FF07F6B413D0EA14B344B20A2DB049B50C3",
   },
   {
     name: "B-283",
@@ -119,7 +140,7 @@ const curves: Curve[] = [
     overallIterations: 32,
     shiftOutputBy: 0,
     width: 8,
-    expected: "77E2B07370EB0F832A6DD5B62DFC88CD06BB84BE",
+    published: "77E2B07370EB0F832A6DD5B62DFC88CD06BB84BE",
   },
   {
     name: "B-409",
@@ -129,7 +150,7 @@ const curves: Curve[] = [
     overallIterations: 60,
     shiftOutputBy: 0,
     width: 8,
-    expected: "4099B5A457F9D69F79213D094C4BCD4D4262210B",
+    published: "4099B5A457F9D69F79213D094C4BCD4D4262210B",
   },
   {
     name: "B-571",
@@ -139,8 +160,8 @@ const curves: Curve[] = [
     overallIterations: 73,
     shiftOutputBy: 0,
     width: 8,
-    expected: "2AA058F73A0E33AB486B0F610410C53A7F132310",
+    published: "2AA058F73A0E33AB486B0F610410C53A7F132310",
   },
 ];
 
-export default curves;
+export default streams;

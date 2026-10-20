@@ -1,23 +1,40 @@
-export type CurveKind = "PRIME" | "BINARY";
+export type StreamKind = "PRIME" | "BINARY";
 
-export type CurveResult = {
+export type StreamResult = {
   name: string;
-  kind: CurveKind;
+  kind: StreamKind;
   date: Date;
   unixTimestamp: number;
-  expected: string;
+  published: string;
   value: string;
   isAccurate: boolean;
 };
 
-export type Curve = {
+export type Stream = {
   name: string;
-  kind: CurveKind;
+  kind: StreamKind;
   date: Date;
   unixTimestamp?: number;
   prngIterations: number;
   overallIterations: number;
   shiftOutputBy: number;
   width: number;
-  expected: string;
+  prime?: bigint;
+  published: string;
+};
+
+export type OrderCache = Record<string, string>;
+
+export type PublishedSeed = {
+  name: string;
+  seed: string;
+};
+
+export type Stream2 = {
+  date: Date;
+  timestamp: number;
+  primeField?: bigint;
+  lrand48Iterations: number;
+  candidateNumber: number;
+  published: PublishedSeed[];
 };

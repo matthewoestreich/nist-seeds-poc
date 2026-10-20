@@ -16,8 +16,8 @@ export default class Rand48 {
   // Mask to retain the lower 32 bits of the seed.
   private static readonly SEED_MASK = 0xffffffffn;
 
-  private state = 0n;
-  private seed = 0n;
+  private _state = 0n;
+  private _seed = 0n;
 
   // If a seed is provided, we use it to initialize the PRNG via `srand48`
   constructor(seed?: bigint) {
@@ -26,26 +26,30 @@ export default class Rand48 {
     }
   }
 
+  get state(): bigint {
+    return this._state;
+  }
+
   // Initialization function
   srand48(seed: bigint): void {
-    this.seed = seed;
-    this.state =
-      ((this.seed & Rand48.SEED_MASK) << Rand48.SEED_SHIFT) |
+    this._seed = seed;
+    this._state =
+      ((this._seed & Rand48.SEED_MASK) << Rand48.SEED_SHIFT) |
       Rand48.INITIAL_STATE_SUFFIX;
   }
 
   drand48(): number {
     this.advanceState();
-    return Number(this.state) / Rand48.SCALE;
+    return Number(this._state) / Rand48.SCALE;
   }
 
   lrand48(): number {
     this.advanceState();
-    return Number(this.state >> Rand48.OUTPUT_SHIFT);
+    return Number(this._state >> Rand48.OUTPUT_SHIFT);
   }
 
   private advanceState(): void {
-    this.state =
-      (Rand48.MULTIPLIER * this.state + Rand48.INCREMENT) & Rand48.STATE_MASK;
+    this._state =
+      (Rand48.MULTIPLIER * this._state + Rand48.INCREMENT) & Rand48.STATE_MASK;
   }
 }
