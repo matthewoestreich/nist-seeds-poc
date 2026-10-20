@@ -1,53 +1,80 @@
 import streams from "./streams.ts";
 import Rand48 from "./rand48.ts";
+import { qualifiesSeed } from "./qualifies.ts";
+import {
+  dateFromUnixTimestamp,
+  dateToUnixTimestamp,
+  formatDate,
+} from "./date.ts";
 
-import type { Stream, StreamResult } from "./types.ts";
+import type { AcceptedSeed, Stream } from "./types.ts";
 
-searchPrimeStreams(streams);
+const candidates = await searchPrimeStreams(streams);
+console.log({ candidates });
 
-const results: StreamResult[] = streams.map((stream) => {
-  stream.unixTimestamp = dateToUnixTimestamp(stream.date);
-  const value = reconstructSeed(stream);
-
-  return {
-    name: stream.name,
-    kind: stream.kind,
-    date: stream.date,
-    unixTimestamp: stream.unixTimestamp,
-    published: stream.published,
-    value,
-    isAccurate: value === stream.published,
-  };
-});
-
-console.log();
-console.table(results);
-console.log();
-
-function reconstructSeed(stream: Stream): string {
-  const isPrime = stream.kind === "PRIME";
-  const unixTime = stream.unixTimestamp ?? dateToUnixTimestamp(stream.date);
-  const seed = isPrime ? unixTime : Math.floor(unixTime / 2);
-
-  const prng = new Rand48();
-  prng.srand48(BigInt(seed));
-
-  const hexs: string[] = [];
-
-  for (let i = 1; i <= stream.overallIterations; i++) {
-    for (let j = 0; j < stream.prngIterations; j++) {
-      const random = prng.lrand48();
-      if (i === stream.overallIterations) {
-        const keep = random >>> stream.shiftOutputBy;
-        const hex = keep.toString(16).padStart(stream.width, "0").toUpperCase();
-        hexs.push(hex);
-      }
-    }
+// @ts-ignore
+function nextSeedBytes(rng: Rand48, size: number, shiftBy: number): Uint8Array {
+  const bytes = new Uint8Array(size);
+  for (let i = 0; i < size; i++) {
+    bytes[i] = rng.lrand48() >>> shiftBy;
   }
-
-  return hexs.join("");
+  return bytes;
 }
 
+function calculateNextPrimeSeed(rng: Rand48): string {
+  let out = "";
+  for (let i = 0; i < 20; i++) {
+    const byte = rng.lrand48() >>> 23;
+    out += byte.toString(16).padStart(2, "0");
+  }
+  return out;
+}
+
+async function searchPrimeStreams(streams: Stream[]): Promise<AcceptedSeed[]> {
+  const primes = streams.filter((stream) => stream.kind === "PRIME");
+  const groupedPrimes = Object.groupBy(primes, (p) =>
+    dateToUnixTimestamp(p.date),
+  );
+
+  const accepted: AcceptedSeed[] = [];
+
+  for (const [timestamp, streams] of Object.entries(groupedPrimes)) {
+    if (!streams || !streams.length) {
+      continue;
+    }
+
+    const date = dateFromUnixTimestamp(Number(timestamp));
+    console.log(`srand48(${timestamp}) [${formatDate(date)}]`);
+
+    const prng = new Rand48();
+    prng.srand48(BigInt(timestamp));
+
+    // `prime` field will be the same for all streams that share the same date
+    const p = streams[0].prime!.toString(16);
+    if (p === "") throw new Error("expected prime field, but no prime exists");
+
+    for (let n = 1, seen = 0; seen < streams.length; n++) {
+      process.stdout.write(`\r\x1b[2KWorking ${n}`);
+      const seed = calculateNextPrimeSeed(prng).toUpperCase();
+
+      const existing = streams.find((s) => s.published === seed);
+      if (existing) {
+        seen++;
+        console.log(`  found : ${existing.name} | ${seed}`);
+      }
+
+      if (await qualifiesSeed(p, seed)) {
+        accepted.push({ candidate: n, seed });
+      }
+    }
+
+    process.stdout.write("\n");
+  }
+
+  return accepted;
+}
+
+// @ts-ignore
 function generatePrimeSeeds(rand48Seed: bigint, iterations: number): string[] {
   const PRIME_ITERATIONS = 20;
   const PRIME_OUTPUT_SHIFT_BY = 23;
@@ -69,57 +96,4 @@ function generatePrimeSeeds(rand48Seed: bigint, iterations: number): string[] {
   }
 
   return seeds;
-}
-
-function nextSeedBytes(rng: Rand48, size: number, shiftBy: number): Uint8Array {
-  const bytes = new Uint8Array(size);
-  for (let i = 0; i < size; i++) {
-    bytes[i] = rng.lrand48() >> shiftBy;
-  }
-  return bytes;
-}
-
-function searchPrimeStreams(streams: Stream[]): void {
-  const primes = streams.filter((stream) => stream.kind === "PRIME");
-  const groupedPrimes = Object.groupBy(primes, (p) =>
-    dateToUnixTimestamp(p.date),
-  );
-
-  for (const [timestamp, streams] of Object.entries(groupedPrimes)) {
-    if (!streams || !streams.length) {
-      continue;
-    }
-
-    const date = dateFromUnixTimestamp(Number(timestamp));
-    console.log(`srand48(${timestamp}) [${formatDate(date)}]`);
-
-    const prng = new Rand48();
-    prng.srand48(BigInt(timestamp));
-
-    for (let n = 1, seen = 0; seen < streams.length; n++) {
-      const seedBytes = nextSeedBytes(prng, 20, 23);
-      const seed = Buffer.from(seedBytes).toString("hex").toUpperCase();
-
-      const existing = streams.find((s) => s.published === seed);
-      if (existing) {
-        seen++;
-        console.log(`  found : ${existing.name} | ${seed}`);
-      }
-    }
-  }
-}
-
-function dateFromUnixTimestamp(timestamp: number): Date {
-  return new Date(timestamp * 1000);
-}
-
-function dateToUnixTimestamp(date: Date): number {
-  return Math.floor(date.getTime() / 1000);
-}
-
-function formatDate(date: Date): string {
-  return date
-    .toISOString()
-    .replace("T", " ")
-    .replace(/\.\d{3}Z$/, " +0000 UTC");
 }

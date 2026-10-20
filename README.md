@@ -9,19 +9,30 @@ As you've most likely heard, Claude solved the mystery of the ECDSA curve origin
 
 # Usage
 
-Install dependencies:
+## Install Dependencies
+
+### PARI/GP
+
+If you want to run the `search` script, you'll need to have [`PARI/GP`](https://pari.math.u-bordeaux.fr/) installed and in your `PATH`! [You can find downloads here](https://pari.math.u-bordeaux.fr/download.html) or if you're on Mac and have `brew` you can run `brew install pari`.
+
+### NPM Dependencies
 
 ```bash
+# From root of project
 $ npm install
 ```
 
-If you are running `Node v22.18.0` or above you can do: `node src/main.ts`.
+## Scripts
 
-Otherwise, you'll need to run the transpiled `main.js` file after building.
+### Reconstruct Seeds
+
+If you are running `Node v22.18.0` or above you can do: `node src/reconstructSeeds.ts`.
+
+Otherwise, you'll need to run the transpiled `reconstructSeeds.js` file after building.
 
 ```bash
 $ npm run build
-$ node dist/main.js
+$ node dist/reconstructSeeds.js
 ```
 
 You should see the following output:

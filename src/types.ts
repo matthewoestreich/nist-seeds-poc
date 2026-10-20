@@ -1,8 +1,8 @@
 export type StreamKind = "PRIME" | "BINARY";
 
-export type ReconstructedSeed = {
-  value: string;
-  bytes: number[];
+export type AcceptedSeed = {
+  candidate: number;
+  seed: string;
 };
 
 export type StreamResult = {
