@@ -2,14 +2,14 @@ import { createHash } from "node:crypto";
 import { PariGP } from "./pari-gp.ts";
 
 import type { OrderCache } from "./types.ts";
-import PersistantFileRW from "./PersistantFileRW.ts";
+import PersistentFileRW from "./PersistentFileRW.ts";
 
 const SEED_BITS = 160n;
 const SEED_BYTES = 20;
 const SEED_MODULUS = 1n << SEED_BITS;
 
 const CACHE_FILE_PATH = "./orders.txt";
-const CACHER = new PersistantFileRW(CACHE_FILE_PATH);
+const CACHER = new PersistentFileRW(CACHE_FILE_PATH);
 const ORDER_CACHE = await initializeCache(CACHER);
 
 const PARI = new PariGP();
@@ -253,7 +253,7 @@ async function curveOrder(p: bigint, b: bigint): Promise<bigint> {
   }
 }
 
-async function initializeCache(cacher: PersistantFileRW): Promise<OrderCache> {
+async function initializeCache(cacher: PersistentFileRW): Promise<OrderCache> {
   await cacher.initialize();
   const cache: OrderCache = {};
 
@@ -272,7 +272,7 @@ async function initializeCache(cacher: PersistantFileRW): Promise<OrderCache> {
 }
 
 async function cacheOrder(
-  cacher: PersistantFileRW,
+  cacher: PersistentFileRW,
   p: bigint,
   b: bigint,
   n: bigint,

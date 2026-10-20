@@ -2,7 +2,7 @@ import { open, type FileHandle } from "node:fs/promises";
 import { createReadStream } from "node:fs";
 import readline from "node:readline";
 
-export default class PersistantFileRW {
+export default class PersistentFileRW {
   private fileHandle: FileHandle | null = null;
   private filePath: string;
   private writeQueue: Promise<void> = Promise.resolve();
