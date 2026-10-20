@@ -2,9 +2,16 @@ import { createHash } from "node:crypto";
 // import { spawnSync } from "node:child_process";
 import { PariGP } from "./pari-gp.ts";
 
+import type { OrderCache } from "./types.ts";
+import Cacher from "./Cacher.ts";
+
 const SEED_BITS = 160n;
 const SEED_BYTES = 20;
 const SEED_MODULUS = 1n << SEED_BITS;
+
+const CACHE_FILE_PATH = "./orders.txt";
+const CACHER = new Cacher(CACHE_FILE_PATH);
+const ORDER_CACHE = await initializeCache(CACHER);
 
 const PARI = new PariGP();
 
@@ -38,25 +45,13 @@ export async function qualifiesSeed(
   // b² ≡ -27/c (mod p).
   const inverse = modPow(c, p - 2n, p);
   const bSquared = mod(-27n * inverse, p);
-
   const root = modSqrt(bSquared, p);
 
   if (root === null) {
-    //console.log("Rejected: no square root");
     return false;
   }
 
   const n = await curveOrder(p, root);
-
-  //console.log({
-  //  pBits: bits,
-  //  c: c.toString(16),
-  //  b: root.toString(16),
-  //  order: n.toString(16),
-  //  orderBits: n.toString(2).length,
-  //  probablePrime: isProbablyPrime(n),
-  //  suitableOrder: suitableOrder(p, n),
-  //});
 
   return suitableOrder(p, n);
 }
@@ -238,32 +233,63 @@ function isProbablyPrime(n: bigint): boolean {
   return true;
 }
 
-// Uses PARI/GP's SEA implementation, as in the Go program.
+// Uses PARI/GP's SEA implementation.
 async function curveOrder(p: bigint, b: bigint): Promise<bigint> {
-  return PARI.curveOrder(p, b);
-  /*
-  const script = `print(ellsea(ellinit([-3, ${b}], ${p}), 1))\n`;
-
-  const result = spawnSync(
-    "gp",
-    ["-q", "-f", "--default", "parisizemax=2000000000"],
-    { input: script, encoding: "utf8" },
-  );
-
-  if (result.error) {
-    throw result.error;
-  }
-  if (result.status !== 0) {
-    throw new Error(result.stderr || "PARI/GP failed");
+  // Cache hit
+  try {
+    const key = `${p.toString(16)} ${b.toString(16)}`;
+    const value = ORDER_CACHE[key];
+    if (value && value !== "") {
+      return Promise.resolve(BigInt(`0x${value}`));
+    }
+  } catch (err: unknown) {
+    return Promise.reject(
+      `Error in curveOrder while reading ORDER_CACHE ${(err as Error).message}`,
+    );
   }
 
-  const output = result.stdout.trim();
-  if (!/^\d+$/.test(output)) {
-    throw new Error(`Unexpected PARI/GP output: ${output}`);
+  // Cache miss : Generate curve order via pari/gp
+  try {
+    const order = await PARI.curveOrder(p, b);
+    cacheOrder(CACHER, p, b, order);
+    return Promise.resolve(order);
+  } catch (err: unknown) {
+    return Promise.reject(`Error in curveOrder : ${(err as Error).message}`);
+  }
+}
+
+async function initializeCache(cacher: Cacher): Promise<OrderCache> {
+  await cacher.initialize();
+  const cache: OrderCache = {};
+
+  for await (const line of cacher.readLines()) {
+    const fields = line.split(" ");
+    if (fields.length !== 3) {
+      return Promise.reject("each cache line must contain 3 columns!");
+    }
+
+    const key = `${fields[0]} ${fields[1]}`;
+    const value = `${fields[2]}`;
+    cache[key] = value;
   }
 
-  return BigInt(output);
-  */
+  return cache;
+}
+
+async function cacheOrder(
+  cacher: Cacher,
+  p: bigint,
+  b: bigint,
+  n: bigint,
+): Promise<void> {
+  const key = `${p.toString(16)} ${b.toString(16)}`;
+  const value = `${n.toString(16)}`;
+
+  try {
+    await cacher.appendLine(`${key} ${value}`);
+  } catch (err: unknown) {
+    return Promise.reject(`Error caching order! ${(err as Error).message}`);
+  }
 }
 
 // SP 800-186 Appendix C.2.1.1 and C.1.

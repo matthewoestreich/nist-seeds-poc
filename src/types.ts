@@ -1,10 +1,5 @@
 export type StreamKind = "PRIME" | "BINARY";
 
-export type AcceptedSeed = {
-  candidate: number;
-  seed: string;
-};
-
 export type StreamResult = {
   name: string;
   kind: StreamKind;
@@ -27,3 +22,5 @@ export type Stream = {
   prime?: bigint;
   published: string;
 };
+
+export type OrderCache = Record<string, string>;
