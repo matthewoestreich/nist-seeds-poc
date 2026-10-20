@@ -24,3 +24,17 @@ export type Stream = {
 };
 
 export type OrderCache = Record<string, string>;
+
+export type PublishedSeed = {
+  name: string;
+  seed: string;
+};
+
+export type Stream2 = {
+  date: Date;
+  timestamp: number;
+  primeField?: bigint;
+  lrand48Iterations: number;
+  candidateNumber: number;
+  published: PublishedSeed[];
+};

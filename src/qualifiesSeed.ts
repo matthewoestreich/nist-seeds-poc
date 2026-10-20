@@ -15,6 +15,10 @@ const ORDER_CACHE = await initializeCache(CACHER);
 
 const PARI = new PariGP();
 
+export async function endSearch(): Promise<void> {
+  await CACHER.close();
+}
+
 export async function qualifiesSeed(
   pHex: string,
   seedHex: string,

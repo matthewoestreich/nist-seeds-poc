@@ -1,6 +1,6 @@
 import streams from "./streams.ts";
 import Rand48 from "./rand48.ts";
-import { qualifiesSeed } from "./qualifies.ts";
+import { endSearch, qualifiesSeed } from "./qualifiesSeed.ts";
 import {
   dateFromUnixTimestamp,
   dateToUnixTimestamp,
@@ -11,8 +11,8 @@ import type { Stream } from "./types.ts";
 
 const DEFAULT_NAME = "-";
 
-const candidates = await searchPrimeStreams(streams);
-console.log({ candidates });
+await searchPrimeStreams(streams);
+await endSearch();
 
 function calculateNextPrimeSeed(rng: Rand48): string {
   let out = "";
