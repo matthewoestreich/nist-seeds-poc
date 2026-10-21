@@ -163,7 +163,7 @@ Alternatively, compile the project and run the generated JavaScript:
 
 ```bash
 npm run build
-node src/generate.js --n 1000 --rand48seed 123456789 --kind prime
+node dist/generate.js --n 1000 --rand48seed 123456789 --kind prime
 ```
 
 ### Example: Using the Current Unix Timestamp
@@ -180,7 +180,7 @@ node src/generate.ts --n 10 --rand48seed "$(date +%s)" --kind prime
 
 ```bash
 npm run build
-node src/generate.js --n 10 --rand48seed "$(date +%s)" --kind prime
+node dist/generate.js --n 10 --rand48seed "$(date +%s)" --kind prime
 ```
 
 Replace `prime` with `binary` to experiment with the alternative extraction method.
