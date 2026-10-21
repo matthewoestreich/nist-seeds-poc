@@ -1,7 +1,6 @@
 #!/usr/bin/env node
 
 import { resolve } from "node:path";
-import { formatDate } from "./date.ts";
 import streams from "./streams.ts";
 import Rand48 from "./Rand48.ts";
 import PariGP from "./PariGP.ts";
@@ -84,6 +83,13 @@ async function initializeCache(cacher: PersistentFileRW): Promise<OrderCache> {
   }
 
   return cache;
+}
+
+function formatDate(date: Date): string {
+  return date
+    .toISOString()
+    .replace("T", " ")
+    .replace(/\.\d{3}Z$/, " +0000 UTC");
 }
 
 function ordinalSuffixOf(i: number): string {
