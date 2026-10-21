@@ -1,3 +1,5 @@
+#!/usr/bin/env node
+
 import type { PublishedSeed, StreamResult } from "./types.ts";
 import { SEED_EXTRACTION_PARAMS } from "./constants.ts";
 import streams from "./streams.ts";

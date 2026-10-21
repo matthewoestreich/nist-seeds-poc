@@ -1,3 +1,12 @@
+#!/usr/bin/env node
+
+import { createHash } from "node:crypto";
+import { resolve } from "node:path";
+import { formatDate } from "./date.ts";
+import streams from "./streams.ts";
+import Rand48 from "./Rand48.ts";
+import PariGP from "./PariGP.ts";
+import PersistentFileRW from "./PersistentFileRW.ts";
 import type { OrderCache, Stream } from "./types.ts";
 import {
   SEED_BITS,
@@ -5,15 +14,9 @@ import {
   SEED_EXTRACTION_PARAMS,
   SEED_MODULUS,
 } from "./constants.ts";
-import { createHash } from "node:crypto";
-import { formatDate } from "./date.ts";
-import streams from "./streams.ts";
-import Rand48 from "./Rand48.ts";
-import PariGP from "./PariGP.ts";
-import PersistentFileRW from "./PersistentFileRW.ts";
 
 const ACCEPTED_STREAM_DEFAULT_NAME = "-";
-const CACHE_FILE_PATH = "./orders_cache.txt";
+const CACHE_FILE_PATH = resolve("./orders_cache.txt");
 const CACHER = new PersistentFileRW(CACHE_FILE_PATH);
 const PARIGP = new PariGP();
 const ORDER_CACHE = await initializeCache(CACHER);
@@ -29,6 +32,7 @@ async function searchPrimeStreams(
   streams: Stream[],
   cacher: PersistentFileRW,
   acceptedStreamDefaultName: string = ACCEPTED_STREAM_DEFAULT_NAME,
+  parigp: PariGP = PARIGP,
 ): Promise<void> {
   const primeStreams = streams.filter(
     (stream) => stream.primeField !== undefined,
@@ -49,7 +53,7 @@ async function searchPrimeStreams(
         name = existing.name;
       }
 
-      if (await qualifiesSeed(stream.primeField!, seed)) {
+      if (await qualifiesSeed(stream.primeField!, seed, parigp)) {
         // If we found an existing seed it means it was published by NIST.
         const isPublished = name !== acceptedStreamDefaultName;
         logAcceptedRow(n, seed, name, isPublished);
@@ -98,7 +102,11 @@ function calculateNextPrimeSeed(rng: Rand48): bigint {
   return BigInt(`0x${out}`);
 }
 
-async function qualifiesSeed(p: bigint, seed: bigint): Promise<boolean> {
+async function qualifiesSeed(
+  p: bigint,
+  seed: bigint,
+  parigp: PariGP,
+): Promise<boolean> {
   const bits = p.toString(2).length;
   const c = hashSeed(seed, bits);
 
@@ -116,7 +124,7 @@ async function qualifiesSeed(p: bigint, seed: bigint): Promise<boolean> {
     return false;
   }
 
-  const n = await curveOrder(p, root);
+  const n = await curveOrder(p, root, parigp);
 
   return suitableOrder(p, n);
 }
@@ -299,7 +307,11 @@ function isProbablyPrime(n: bigint): boolean {
 }
 
 // Uses PARI/GP's SEA implementation.
-async function curveOrder(p: bigint, b: bigint): Promise<bigint> {
+async function curveOrder(
+  p: bigint,
+  b: bigint,
+  parigp: PariGP,
+): Promise<bigint> {
   // Cache hit
   try {
     const key = `${p.toString(16)} ${b.toString(16)}`;
@@ -309,13 +321,13 @@ async function curveOrder(p: bigint, b: bigint): Promise<bigint> {
     }
   } catch (err: unknown) {
     return Promise.reject(
-      `Error in curveOrder while reading ORDER_CACHE ${(err as Error).message}`,
+      `Error in curveOrder while reading cache ${(err as Error).message}`,
     );
   }
 
   // Cache miss : Generate curve order via pari/gp
   try {
-    const order = await PARIGP.curveOrder(p, b);
+    const order = await parigp.curveOrder(p, b);
     cacheOrder(CACHER, p, b, order);
     return Promise.resolve(order);
   } catch (err: unknown) {

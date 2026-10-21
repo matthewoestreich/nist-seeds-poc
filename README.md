@@ -33,7 +33,7 @@ The speculative seed validation process draws on the procedures specified in NIS
 
 - **Node.js `22.18.0+`** — Required to run the TypeScript source files directly. Alternatively, compile the project to JavaScript and run the generated files.
 
-- **[PARI/GP](https://pari.math.u-bordeaux.fr/)** — Required **only if `orders_cache.txt` is missing** and is only needed for running the `search` script. **Keeping the cache (or not running the `search` script) avoids the need to install PARI/GP.**
+- **[PARI/GP](https://pari.math.u-bordeaux.fr/)** — ❗ Required **only if `orders_cache.txt` is missing** and is only needed for running the `search` script. **Keeping the cache (or not running the `search` script) avoids the need to install PARI/GP.**
 
 ## Install npm Dependencies
 
@@ -43,9 +43,9 @@ From the project root, run:
 npm install
 ```
 
-## *Install PARI/GP
+## Install PARI/GP
 
-***NOTE:** PARI/GP is only required if you want to run the `search` script and have removed the cached orders, `orders_cache.txt`, at the root of this repository! **Keeping the cache (or not running the `search` script) avoids the need to install PARI/GP.**
+❗ ***NOTE:** PARI/GP is only required if you want to run the `search` script and have removed the cached elliptic-curve orders, `orders_cache.txt`, at the root of this repository! **Keeping the cache (or not running the `search` script) avoids the need to install PARI/GP.**
 
 To run the `search` script, install [PARI/GP](https://pari.math.u-bordeaux.fr/) and ensure its `gp` executable is available in your `PATH`.
 
@@ -114,14 +114,14 @@ Run the reconstruction script to test the suspected generation timestamps and co
 With Node.js `v22.18.0` or later:
 
 ```bash
-node src/reconstructSeeds.ts
+node src/reconstruct.ts
 ```
 
 Alternatively, compile the project and run the generated JavaScript:
 
 ```bash
 npm run build
-node dist/reconstructSeeds.js
+node dist/reconstruct.js
 ```
 
 ### Expected Output
@@ -147,4 +147,55 @@ A successful run should produce a table similar to the following. The `published
 │ 12      │ 'B-409'      │ 1998-04-17T15:30:18.000Z │ 892827018 │ '4099B5A457F9D69F79213D094C4BCD4D4262210B' │ '4099B5A457F9D69F79213D094C4BCD4D4262210B' │ true       │
 │ 13      │ 'B-571'      │ 1998-04-17T15:32:08.000Z │ 892827128 │ '2AA058F73A0E33AB486B0F610410C53A7F132310' │ '2AA058F73A0E33AB486B0F610410C53A7F132310' │ true       │
 └─────────┴──────────────┴──────────────────────────┴───────────┴────────────────────────────────────────────┴────────────────────────────────────────────┴────────────┘
+```
+
+## Generate N Seeds
+
+The `generate` script lets you experiment with seed generation by specifying the number of seeds to generate, the `rand48` initial seed, and the extraction method (`prime` or `binary`).
+
+**Run the TypeScript source directly** (Node.js `v22.18.0` or later):
+
+```bash
+node src/generate.ts --n 1000 --rand48seed 123456789 --kind prime
+```
+
+Alternatively, compile the project and run the generated JavaScript:
+
+```bash
+npm run build
+node src/generate.js --n 1000 --rand48seed 123456789 --kind prime
+```
+
+### Example: Using the Current Unix Timestamp
+
+NIST's seed-generation procedure used the current Unix timestamp to initialize `rand48`. The following examples use the same approach by passing the current timestamp as `--rand48seed`.
+
+**Run the TypeScript source directly:**
+
+```bash
+node src/generate.ts --n 10 --rand48seed "$(date +%s)" --kind prime
+```
+
+**Run the compiled JavaScript:**
+
+```bash
+npm run build
+node src/generate.js --n 10 --rand48seed "$(date +%s)" --kind prime
+```
+
+Replace `prime` with `binary` to experiment with the alternative extraction method.
+
+#### Sample Output
+
+```bash
+854598AC118D5C96D7391010250603F7E1C3A438
+F70804FCE0FC963847853D18DB30F530A039EEE9
+17A136BB4368E55B27D60813B8D25411A98B29C6
+42C2B407CFDF97B890100B723F830148FA35F583
+A1ED06588C3AD7E57B24B319F9F02C7B9B98C785
+2B47271259B05BA9F3ACA39A76F403D0BA6719A3
+3BABCC24A38055C4B992642DDB65ACDCBAAA4034
+15A1C71C14A3D27A60237CF6773BBCE08A6FC25F
+D218759B4A9786DC8AD9052E44611240B1065C20
+C81CB72F4D442D7CD7A8A8D86F918A6195F34BB3
 ```

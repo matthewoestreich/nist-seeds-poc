@@ -1,6 +1,6 @@
 import { spawn, type ChildProcessWithoutNullStreams } from "node:child_process";
 import { createInterface } from "node:readline";
-import { PendingRequest } from "./types.ts";
+import type { PendingRequest } from "./types.ts";
 
 export default class PariGP {
   private readonly child: ChildProcessWithoutNullStreams;

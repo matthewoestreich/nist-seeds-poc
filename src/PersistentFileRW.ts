@@ -12,7 +12,9 @@ export default class PersistentFileRW {
   }
 
   async initialize(): Promise<void> {
-    if (this.fileHandle) return;
+    if (this.fileHandle) {
+      return;
+    }
     // 'a+' ensures the file is created if missing and allows reading/appending
     this.fileHandle = await open(this.filePath, "a+");
   }
