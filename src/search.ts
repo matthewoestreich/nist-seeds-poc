@@ -3,11 +3,12 @@
 import { resolve } from "node:path";
 import { formatDate } from "./date.ts";
 import streams from "./streams.ts";
+import { default as streams2 } from "./streams2.ts";
 import Rand48 from "./Rand48.ts";
 import PariGP from "./PariGP.ts";
 import PersistentFileRW from "./PersistentFileRW.ts";
 import qualifiesSeed from "./qualifies.ts";
-import type { OrderCache, Stream } from "./types.ts";
+import type { OrderCache, Stream, Stream2 } from "./types.ts";
 import { SEED_EXTRACTION_PARAMS } from "./constants.ts";
 
 const ACCEPTED_STREAM_DEFAULT_NAME = "-";
@@ -19,7 +20,8 @@ const ORDER_CACHE = await initializeCache(CACHER);
 await Main();
 
 async function Main() {
-  await searchPrimeStreams(streams);
+  // await searchPrimeStreams(streams);
+  await searchPrimeStreams2(streams2);
   PARIGP.close();
 }
 
@@ -43,6 +45,51 @@ async function searchPrimeStreams(
       let name = acceptedStreamDefaultName;
       const seed = calculateNextPrimeSeed(prng);
       const existing = stream.published.find((s) => s.seed === seed);
+
+      if (existing) {
+        seen++;
+        name = existing.name;
+      }
+
+      const isQualified = await qualifiesSeed(
+        stream.primeField!,
+        seed,
+        parigp,
+        orderCache,
+        cacher,
+      );
+
+      if (isQualified) {
+        // If we found an existing seed it means it was published by NIST.
+        const isPublished = name !== acceptedStreamDefaultName;
+        logAcceptedRow(n, seed, name, isPublished);
+      }
+    }
+  }
+
+  await cacher.close();
+}
+
+export async function searchPrimeStreams2(
+  streams: Stream2[],
+  acceptedStreamDefaultName: string = ACCEPTED_STREAM_DEFAULT_NAME,
+  cacher: PersistentFileRW = CACHER,
+  parigp: PariGP = PARIGP,
+  orderCache: OrderCache = ORDER_CACHE,
+): Promise<void> {
+  const primeStreams = streams.filter(
+    (stream) => stream.primeField !== undefined,
+  );
+
+  for (const stream of primeStreams) {
+    console.log(`srand48(${stream.timestamp}) [${formatDate(stream.date)}]`);
+    // Calls `srand48` under the hood.
+    const prng = new Rand48(BigInt(stream.timestamp));
+
+    for (let n = 1, seen = 0; seen < stream.published.size; n++) {
+      let name = acceptedStreamDefaultName;
+      const seed = calculateNextPrimeSeed(prng);
+      const existing = stream.published.get(seed);
 
       if (existing) {
         seen++;

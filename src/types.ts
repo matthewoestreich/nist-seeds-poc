@@ -6,6 +6,18 @@ export type PublishedSeed = {
   seed: bigint;
 };
 
+export type PublishedSeed2 = {
+  name: string;
+  candidateNumber: number;
+};
+
+export type Stream2 = {
+  date: Date;
+  timestamp: number;
+  primeField?: bigint;
+  published: Map<bigint, PublishedSeed2>;
+};
+
 export type Stream = {
   date: Date;
   timestamp: number;
