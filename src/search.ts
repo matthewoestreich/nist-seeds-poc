@@ -1,5 +1,10 @@
 import type { OrderCache, Stream } from "./types.ts";
-import { SEED_BITS, SEED_BYTES, SEED_MODULUS } from "./constants.ts";
+import {
+  SEED_BITS,
+  SEED_BYTES,
+  SEED_EXTRACTION_PARAMS,
+  SEED_MODULUS,
+} from "./constants.ts";
 import { createHash } from "node:crypto";
 import { formatDate } from "./date.ts";
 import streams from "./streams.ts";
@@ -46,7 +51,7 @@ async function searchPrimeStreams(
 
       if (await qualifiesSeed(stream.primeField!, seed)) {
         // If we found an existing seed it means it was published by NIST.
-        const isPublished = name !== ACCEPTED_STREAM_DEFAULT_NAME;
+        const isPublished = name !== acceptedStreamDefaultName;
         logAcceptedRow(n, seed, name, isPublished);
       }
     }
@@ -86,9 +91,9 @@ function logAcceptedRow(
 
 function calculateNextPrimeSeed(rng: Rand48): bigint {
   let out = "";
-  for (let i = 0; i < 20; i++) {
-    const byte = rng.lrand48() >>> 23;
-    out += byte.toString(16).padStart(2, "0");
+  for (let i = 0; i < SEED_EXTRACTION_PARAMS.prime.lrand48Iterations; i++) {
+    const byte = rng.lrand48() >>> SEED_EXTRACTION_PARAMS.prime.shiftOutputBy;
+    out += byte.toString(16).padStart(SEED_EXTRACTION_PARAMS.prime.width, "0");
   }
   return BigInt(`0x${out}`);
 }
