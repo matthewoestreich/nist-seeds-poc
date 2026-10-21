@@ -363,7 +363,7 @@ async function cacheOrder(
   const value = `${n.toString(16)}`;
 
   try {
-    await cacher.appendLine(`${key} ${value}`);
+    return cacher.appendLine(`${key} ${value}`);
   } catch (err: unknown) {
     return Promise.reject(`Error caching order! ${(err as Error).message}`);
   }
