@@ -92,7 +92,6 @@ function modSqrt(n: bigint, p: bigint): bigint | null {
   if (modPow(n, (p - 1n) / 2n, p) !== 1n) {
     return null;
   }
-
   if (p % 4n === 3n) {
     const root = modPow(n, (p + 1n) / 4n, p);
     return (root * root) % p === n ? root : null;
