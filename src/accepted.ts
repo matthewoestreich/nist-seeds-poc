@@ -53,9 +53,8 @@ if (values.help || Object.values(values).length === 0) {
 
 // Check for required params
 if (!values.generatedSeed || !values.primeField) {
-  console.error("[ERROR] Missing required argument!\n");
   printHelp();
-  process.exit(1);
+  throw new Error("[ERROR] Missing required argument!");
 }
 
 const generatedSeed = cleanHex(values.generatedSeed);
@@ -63,18 +62,16 @@ const primeField = BigInt(values.primeField);
 
 // Validate generated-seed arg
 if (!isNistLikeSeed(generatedSeed)) {
-  console.error(
+  throw new Error(
     "[ERROR] '--generated-seed', or '-s', does not appear to be a 'NIST-like' generated seed. Use 'generate' script to create NIST-like seeds!",
   );
-  process.exit(1);
 }
 
 // Validate prime-field arg
 if (!isAcceptablePrimeField(primeField)) {
-  console.error(
+  throw new Error(
     "[ERROR] '--prime-field', or '-p', is not acceptable! Prime fields cannot be even numbers!",
   );
-  process.exit(1);
 }
 
 const parigp = new PariGP();
@@ -150,7 +147,7 @@ Usage (TypeScript source, Node v22.18.0 or later):
   node src/accepted.ts [options]
 Usage (JavaScript, after compiling):
   npm run build
-  node accepted.js [options]
+  node dist/accepted.js [options]
 
 Options:
   -s, --generated-seed <seed>   Generated seed to verify (hexadecimal)
