@@ -64,7 +64,7 @@ npm install
 
 Search for candidate seeds that satisfy the [seed acceptance criteria](#seed-acceptance-criteria).
 
-**IMPORTANT:** The search uses cached elliptic-curve orders (`orders_cache.txt`) to reduce computation time. Without this cache, you will need to [install PARI/GP](#install-pari%2Fgp), and the search may take around an hour because calculating the number of points on each candidate curve is computationally expensive.
+**IMPORTANT:** The search uses cached elliptic-curve orders (`orders_cache.txt`) to reduce computation time. Without this cache, you will need to [install PARI/GP](#install-parigp), and the search may take around an hour because calculating the number of points on each candidate curve is computationally expensive.
 
 With Node.js `v22.18.0` or later:
 
@@ -208,7 +208,7 @@ C81CB72F4D442D7CD7A8A8D86F918A6195F34BB3
 
 Use the `accepted` script to check whether a generated seed satisfies the NIST acceptance criteria for a given prime field.
 
-❗ **IMPORTANT:** [PARI/GP](#install-pari%2Fgp) is **required** to run this script. Ensure it is installed and available as `gp` in your `PATH`.
+❗ **IMPORTANT:** [PARI/GP](#install-parigp) is **required** to run this script. Ensure it is installed and available as `gp` in your `PATH`.
 
 **Run the TypeScript source directly** (Node.js `v22.18.0` or later):
 
