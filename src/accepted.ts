@@ -86,7 +86,7 @@ console.log(`seed  : ${values.generatedSeed}\nprime : ${values.primeField}`);
 
 if (isAccepted) {
   console.log(
-    `[ACCEPTED] Seed and prime field combination meets NIST acceptance criteria`,
+    `[ACCEPTED] Seed and prime field combination meet NIST acceptance criteria`,
   );
 } else {
   console.log(
