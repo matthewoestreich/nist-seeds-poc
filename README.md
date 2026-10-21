@@ -33,7 +33,10 @@ The speculative seed validation process draws on the procedures specified in NIS
 
 - **Node.js `22.18.0+`** — Required to run the TypeScript source files directly. Alternatively, compile the project to JavaScript and run the generated files.
 
-- **[PARI/GP](https://pari.math.u-bordeaux.fr/)** — ❗ Required **only if `orders_cache.txt` is missing** and is only needed for running the `search` script. **Keeping the cache (or not running the `search` script) avoids the need to install PARI/GP.**
+- **[PARI/GP](https://pari.math.u-bordeaux.fr/)** — Only required under the following circumstance(s):
+
+  1.  You want to run the `search` script **AND** you removed the `orders_cache.txt` file at the root of this repository. **Keeping the cache avoids the need to install PARI/GP**.
+  2.  You want to run the `accepted` script. **Installing PARI/GP is mandatory if you want to run the `accepted` script**.
 
 ## Install npm Dependencies
 
@@ -45,20 +48,23 @@ npm install
 
 ## Install PARI/GP
 
-❗ ***NOTE:** PARI/GP is only required if you want to run the `search` script and have removed the cached elliptic-curve orders, `orders_cache.txt`, at the root of this repository! **Keeping the cache (or not running the `search` script) avoids the need to install PARI/GP.**
+❗ **NOTE:** PARI/GP is only [required under specific circumstances](#prerequisites) ❗
 
-To run the `search` script, install [PARI/GP](https://pari.math.u-bordeaux.fr/) and ensure its `gp` executable is available in your `PATH`.
-
-- [Download PARI/GP](https://pari.math.u-bordeaux.fr/download.html)
+- [Download PARI/GP](https://pari.math.u-bordeaux.fr/download.html) and ensure it's `gp` executable is available in your `PATH`
 - macOS with Homebrew: `brew install pari`
 
 # Scripts
+
+- [search](#search-for-candidate-seeds)
+- [reconstruct](#reconstruct-seeds)
+- [generate](#generate-n-seeds)
+- [accepted](#check-generated-seed-acceptance-criteria)
 
 ## Search for Candidate Seeds
 
 Search for candidate seeds that satisfy the [seed acceptance criteria](#seed-acceptance-criteria).
 
-**IMPORTANT:** The search uses cached elliptic-curve orders (`orders_cache.txt`) to reduce computation time. Without this cache, you will need to install PARI/GP, and the search may take around an hour because calculating the number of points on each candidate curve is computationally expensive.
+**IMPORTANT:** The search uses cached elliptic-curve orders (`orders_cache.txt`) to reduce computation time. Without this cache, you will need to [install PARI/GP](#install-pari%2Fgp), and the search may take around an hour because calculating the number of points on each candidate curve is computationally expensive.
 
 With Node.js `v22.18.0` or later:
 
@@ -73,9 +79,7 @@ npm run build
 node dist/search.js
 ```
 
-**Note:** This script requires PARI/GP to be installed and accessible through `PATH`.
-
-### Expected Output
+**Expected Output:**
 
 ```bash
 srand48(863711343) [1997-05-15 15:49:03 +0000 UTC]
@@ -124,7 +128,7 @@ npm run build
 node dist/reconstruct.js
 ```
 
-### Expected Output
+**Expected Output:**
 
 A successful run should produce a table similar to the following. The `publishedSeed` column contains the reference seed, `calculatedSeed` contains the reconstructed seed, and `isAccurate` indicates whether they match.
 
@@ -185,7 +189,7 @@ node dist/generate.js --n 10 --rand48seed "$(date +%s)" --kind prime
 
 Replace `prime` with `binary` to experiment with the alternative extraction method.
 
-#### Sample Output
+**Example Output:**
 
 ```bash
 854598AC118D5C96D7391010250603F7E1C3A438
@@ -198,4 +202,39 @@ A1ED06588C3AD7E57B24B319F9F02C7B9B98C785
 15A1C71C14A3D27A60237CF6773BBCE08A6FC25F
 D218759B4A9786DC8AD9052E44611240B1065C20
 C81CB72F4D442D7CD7A8A8D86F918A6195F34BB3
+```
+
+## Check Generated Seed Acceptance Criteria
+
+Use the `accepted` script to check whether a generated seed satisfies the NIST acceptance criteria for a given prime field.
+
+❗ **IMPORTANT:** [PARI/GP](#install-pari%2Fgp) is **required** to run this script. Ensure it is installed and available as `gp` in your `PATH`.
+
+**Run the TypeScript source directly** (Node.js `v22.18.0` or later):
+
+```bash
+node src/accepted.ts --generated-seed C81CB72F4D442D7CD7A8A8D86F918A6195F34BB3 --prime-field 123
+```
+
+Alternatively, compile the project and run the generated JavaScript:
+
+```bash
+npm run build
+node dist/accepted.js --generated-seed C81CB72F4D442D7CD7A8A8D86F918A6195F34BB3 --prime-field 123
+```
+
+### Example: Check a Newly Generated Seed
+
+You can pass the output of the `generate` script directly to `accepted` using Bash command substitution. This example generates one prime seed using the current Unix timestamp as the `rand48` seed, then checks it against the specified prime field:
+
+```bash
+node src/accepted.ts \
+  --generated-seed "$(node src/generate.ts --n 1 --rand48seed "$(date +%s)" --kind prime)" \
+  --prime-field 123456789
+```
+
+**Example Output:**
+
+```text
+[REJECTED] Seed '3C6C552E480ED0B672FBA7ADE13F867AFCFC648F' does NOT meet NIST acceptance criteria!
 ```

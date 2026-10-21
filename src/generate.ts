@@ -6,14 +6,15 @@ import { SEED_EXTRACTION_PARAMS } from "./constants.ts";
 import type { SeedExtractionParameters } from "./types.ts";
 
 /**
- * USAGE:
- * `node generateNSeeds.js --n 100 --rand48seed 1234 --kind prime`
+ * JAVASCRIPT USAGE:
+ * `node dist/generate.js --n 100 --rand48seed 1234 --kind prime`
  * The line below is equivalent to the line above, using shorthand args.
- * `node generateNSeeds.js -n 100 -s 1234 -k prime`
+ * `node dist/generate.js -n 100 -s 1234 -k prime`
  *
- * `node generateNSeeds.js --n 100 --rand48seed 1234 --kind binary`
+ * TYPESCRIPT USAGE:
+ * `node src/generate.ts --n 100 --rand48seed 1234 --kind binary`
  * The line below is equivalent to the line above, using shorthand args.
- * `node generateNSeeds.js -n 100 -s 1234 -k binary`
+ * `node src/generate.ts -n 100 -s 1234 -k binary`
  */
 
 const { values } = parseArgs({

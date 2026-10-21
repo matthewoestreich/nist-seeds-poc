@@ -48,7 +48,7 @@ function reconstructSeed(
   const prng = new Rand48();
   prng.srand48(BigInt(seed));
 
-  const hexs: string[] = [];
+  let nistLikeSeed = "";
 
   for (let i = 1; i <= publishedSeed.candidateNumber; i++) {
     for (let j = 0; j < params.lrand48Iterations; j++) {
@@ -56,10 +56,10 @@ function reconstructSeed(
       if (i === publishedSeed.candidateNumber) {
         const keep = random >>> params.shiftOutputBy;
         const hex = keep.toString(16).padStart(params.width, "0").toUpperCase();
-        hexs.push(hex);
+        nistLikeSeed += hex;
       }
     }
   }
 
-  return hexs.join("");
+  return nistLikeSeed;
 }
