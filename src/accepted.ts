@@ -128,14 +128,6 @@ function isNistLikeSeed(hexString: string): boolean {
 
 function isAcceptablePrimeField(primeField: bigint): boolean {
   return primeField > 0n && primeField % 2n !== 0n;
-  //if (primeField <= 0n) {
-  //  return false;
-  //}
-  //// Even numbers cannot be prime fields
-  //if (primeField % 2n === 0n) {
-  //  return false;
-  //}
-  //return true;
 }
 
 // @ts-ignore
