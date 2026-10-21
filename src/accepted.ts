@@ -85,13 +85,15 @@ const isAccepted = await qualifiesSeed(
   parigp,
 );
 
+console.log(`seed  : ${values.generatedSeed}\nprime : ${values.primeField}`);
+
 if (isAccepted) {
   console.log(
-    `seed : ${values.generatedSeed}\nprime: ${values.primeField}\n[ACCEPTED] Seed and prime field combination meets NIST acceptance criteria`,
+    `[ACCEPTED] Seed and prime field combination meets NIST acceptance criteria`,
   );
 } else {
   console.log(
-    `seed : ${values.generatedSeed}\nprime: ${values.primeField}\n[REJECTED] Seed and prime field combination does NOT meet NIST acceptance criteria!`,
+    `[REJECTED] Seed and prime field combination does NOT meet NIST acceptance criteria!`,
   );
 }
 
