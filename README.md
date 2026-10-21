@@ -235,6 +235,8 @@ node src/accepted.ts \
 
 **Example Output:**
 
-```text
-[REJECTED] Seed '3C6C552E480ED0B672FBA7ADE13F867AFCFC648F' does NOT meet NIST acceptance criteria!
+```bash
+seed : BD94D5F269753D743806394A21474A81270C49A0
+prime: 123456789
+[REJECTED] Seed and prime field combination does NOT meet NIST acceptance criteria!
 ```

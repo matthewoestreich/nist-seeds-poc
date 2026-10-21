@@ -87,11 +87,11 @@ const isAccepted = await qualifiesSeed(
 
 if (isAccepted) {
   console.log(
-    `[ACCEPTED] Seed '${values.generatedSeed}' meets NIST acceptance criteria!`,
+    `seed : ${values.generatedSeed}\nprime: ${values.primeField}\n[ACCEPTED] Seed and prime field combination meets NIST acceptance criteria`,
   );
 } else {
   console.log(
-    `[REJECTED] Seed '${values.generatedSeed}' does NOT meet NIST acceptance criteria!`,
+    `seed : ${values.generatedSeed}\nprime: ${values.primeField}\n[REJECTED] Seed and prime field combination does NOT meet NIST acceptance criteria!`,
   );
 }
 
